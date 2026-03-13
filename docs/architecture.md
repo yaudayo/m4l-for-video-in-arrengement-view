@@ -205,3 +205,14 @@ OSC アドレス: /m4lv/<rackId>/frame
 | Live Set 保存 | ❌ | ❌ | △ | ❌ | ✅ |
 
 **推奨構成:** Approach 1（ピクセル転送） + Approach 3（メタデータ/FX パラメータ） + Approach 5（オートメーション）を組み合わせる。
+
+---
+
+## 詳細ドキュメント / Detailed Documentation
+
+各方式の内部仕組み・遅延評価・maxpat オブジェクト構造の詳細については
+**[docs/approach_details.md](./approach_details.md)** を参照してください。
+
+- 各 Approach の内部アルゴリズムと Max ランタイムの動作原理
+- フェーズ別遅延の定量評価と比較表
+- `video_source.maxpat` / `video_fx.maxpat` / `video_hub.maxpat` のオブジェクト一覧・ワイヤリング図・初期化シーケンス
