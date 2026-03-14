@@ -218,7 +218,16 @@ OSC アドレス: /m4lv/<rackId>/frame
 - フェーズ別遅延の定量評価と比較表
 - `video_source.maxpat` / `video_fx.maxpat` / `video_hub.maxpat` のオブジェクト一覧・ワイヤリング図・初期化シーケンス
 
-### GPU テクスチャパス — 動画はテクスチャ状態で扱うべきか？
+### パッチャー抽象化設計 — 可能・不可能の評価と最小インターフェース
+
+**[docs/design_patcher_abstraction.md](./design_patcher_abstraction.md)**
+
+- デバイス間で流れる情報の最小化（textureName + frameIndex + layer の 3 値）
+- 共有アブストラクション `m4lv.frame_io` の設計（JS コードゼロ、8 オブジェクト）
+- OSC 出力デバイスの構成（フレームメタデータのみ送信、ピクセルは送らない）
+- FX デバイスのテンプレート構造（シェーダ差し替えだけで新 FX 完成）
+- ラック ID 自動取得の方法（`live.thisdevice` + `sprintf`）
+- 可能なこと・不可能なことの一覧表
 
 **[docs/gpu_texture_path.md](./gpu_texture_path.md)**
 

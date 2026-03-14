@@ -425,11 +425,19 @@ function trackTextureName(rId, trkId) {
 // ---------------------------------------------------------------------------
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
-        trackTextureName:         trackTextureName,
-        buildTextureDimMessage:   buildTextureDimMessage,
-        buildPositionMessage:     buildPositionMessage,
-        buildScaleMessage:        buildScaleMessage,
+        trackTextureName:          trackTextureName,
+        buildTextureDimMessage:    buildTextureDimMessage,
+        buildPositionMessage:      buildPositionMessage,
+        buildScaleMessage:         buildScaleMessage,
         buildShaderUniformMessage: buildShaderUniformMessage,
+        // FX chain management (exported for testing; in production called via Max messages)
+        addFx:      addFx,
+        removeFx:   removeFx,
+        setFxParam: setFxParam,
+        // Layer management
+        setLayer:    setLayer,
+        removeLayer: removeLayer,
+        dumpLayers:  dumpLayers,
         // Expose internal state for testing
         _state: function (mod) {
             // mod must supply rackId, textureName, renderName, _fxChain, _layers

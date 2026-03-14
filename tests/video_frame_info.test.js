@@ -290,6 +290,123 @@ describe("approach_gl_texture — static helpers", function () {
 });
 
 // ---------------------------------------------------------------------------
+// Tests: approach_gl_texture — FX chain management
+// ---------------------------------------------------------------------------
+
+describe("approach_gl_texture — FX chain management", function () {
+    // Mock the Max JS API globals before loading a fresh module instance
+    global.inlets  = 2;
+    global.outlets = 4;
+    global.inlet   = 0;
+    global.outlet  = function () {};
+
+    var gltPath = path.join(root, "shared", "approach_gl_texture.js");
+    delete require.cache[require.resolve(gltPath)];
+    var glt2 = require(gltPath);
+
+    // addFx
+    glt2.addFx("brcosa", "brcosa.jxs");
+    var s = glt2._state({});
+    assertEq(s.fxChain.length, 1, "addFx adds one FX entry");
+    assertEq(s.fxChain[0].name,   "brcosa",    "addFx stores fx name");
+    assertEq(s.fxChain[0].shader, "brcosa.jxs","addFx stores shader filename");
+
+    // addFx duplicate — should update, not push
+    glt2.addFx("brcosa", "brcosa2.jxs");
+    var s2 = glt2._state({});
+    assertEq(s2.fxChain.length, 1, "addFx on same name updates, not duplicates");
+    assertEq(s2.fxChain[0].shader, "brcosa2.jxs", "addFx updates shader filename");
+
+    // addFx second entry
+    glt2.addFx("blur", "fastblur.jxs");
+    assertEq(glt2._state({}).fxChain.length, 2, "addFx adds second FX");
+
+    // setFxParam
+    glt2.setFxParam("brcosa", "brightness", 0.5);
+    var brcosaEntry = glt2._state({}).fxChain[0];
+    assertEq(brcosaEntry.uniforms.brightness, 0.5, "setFxParam stores uniform value");
+
+    // setFxParam on unknown fx should not throw
+    glt2.setFxParam("unknown_fx", "val", 1.0);
+    assert(true, "setFxParam on unknown fx does not throw");
+
+    // removeFx
+    glt2.removeFx("brcosa");
+    assertEq(glt2._state({}).fxChain.length, 1, "removeFx removes the entry");
+    assertEq(glt2._state({}).fxChain[0].name, "blur", "removeFx removes the correct entry");
+
+    // removeFx non-existent should not throw
+    glt2.removeFx("not_there");
+    assert(true, "removeFx on non-existent entry does not throw");
+
+    delete require.cache[require.resolve(gltPath)];
+    delete global.outlet;
+    delete global.inlet;
+    delete global.inlets;
+    delete global.outlets;
+});
+
+// ---------------------------------------------------------------------------
+// Tests: approach_gl_texture — layer management
+// ---------------------------------------------------------------------------
+
+describe("approach_gl_texture — layer management", function () {
+    global.inlets  = 2;
+    global.outlets = 4;
+    global.inlet   = 0;
+    global.outlet  = function () {};
+
+    var gltPath = path.join(root, "shared", "approach_gl_texture.js");
+    delete require.cache[require.resolve(gltPath)];
+    var glt3 = require(gltPath);
+
+    // setLayer
+    glt3.setLayer("trackA", "m4lv_1_tex_A", 0, 1.0, 1.0, 1.0, 0, 0, 0);
+    var s = glt3._state({});
+    assertEq(s.layers.length, 1, "setLayer adds one layer");
+    assertEq(s.layers[0].trackId, "trackA",       "setLayer stores trackId");
+    assertEq(s.layers[0].texName, "m4lv_1_tex_A", "setLayer stores texName");
+    assertEq(s.layers[0].layer,   0,               "setLayer stores layer index");
+    assertEq(s.layers[0].opacity, 1.0,             "setLayer stores opacity");
+
+    // setLayer duplicate — should update
+    glt3.setLayer("trackA", "m4lv_1_tex_A_fx", 0, 0.5, 1.0, 1.0, 0, 0, 0);
+    assertEq(glt3._state({}).layers.length, 1, "setLayer updates existing track, not duplicates");
+    assertEq(glt3._state({}).layers[0].texName, "m4lv_1_tex_A_fx", "setLayer updates texName");
+    assertEq(glt3._state({}).layers[0].opacity, 0.5, "setLayer updates opacity");
+
+    // setLayer second track
+    glt3.setLayer("trackB", "m4lv_1_tex_B", 1, 1.0, 1.0, 1.0, 0, 0, 0);
+    assertEq(glt3._state({}).layers.length, 2, "setLayer adds second layer");
+
+    // Z-order: lower layer index = back
+    glt3.setLayer("trackC", "m4lv_1_tex_C", 2, 1.0, 1.0, 1.0, 0, 0, 0);
+    var layers = glt3._state({}).layers;
+    var idxA = layers.findIndex(function (l) { return l.trackId === "trackA"; });
+    var idxB = layers.findIndex(function (l) { return l.trackId === "trackB"; });
+    var idxC = layers.findIndex(function (l) { return l.trackId === "trackC"; });
+    assert(layers[idxA].layer < layers[idxB].layer, "trackA layer < trackB layer");
+    assert(layers[idxB].layer < layers[idxC].layer, "trackB layer < trackC layer");
+
+    // removeLayer
+    glt3.removeLayer("trackB");
+    assertEq(glt3._state({}).layers.length, 2, "removeLayer removes one layer");
+    var remaining = glt3._state({}).layers.map(function (l) { return l.trackId; });
+    assert(remaining.indexOf("trackB") === -1, "removeLayer removes the correct layer");
+    assert(remaining.indexOf("trackA") >= 0,   "removeLayer leaves other layers");
+
+    // removeLayer non-existent should not throw
+    glt3.removeLayer("not_there");
+    assert(true, "removeLayer on non-existent layer does not throw");
+
+    delete require.cache[require.resolve(gltPath)];
+    delete global.outlet;
+    delete global.inlet;
+    delete global.inlets;
+    delete global.outlets;
+});
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 
