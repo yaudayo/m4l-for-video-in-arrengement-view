@@ -238,6 +238,58 @@ describe("OSC port calculation", function () {
 });
 
 // ---------------------------------------------------------------------------
+// Tests: approach_gl_texture — GPU texture path helpers
+// ---------------------------------------------------------------------------
+
+describe("approach_gl_texture — static helpers", function () {
+    var glt = require(path.join(root, "shared", "approach_gl_texture.js"));
+
+    // trackTextureName
+    assertEq(glt.trackTextureName("42", "t1"),
+             "m4lv_42_tex_t1",
+             "trackTextureName builds correct name");
+    assertEq(glt.trackTextureName("abc", "track99"),
+             "m4lv_abc_tex_track99",
+             "trackTextureName works with string rackId");
+
+    // buildTextureDimMessage
+    var dim = glt.buildTextureDimMessage(1920, 1080);
+    assertEq(dim[0], "dim",  "buildTextureDimMessage returns 'dim' keyword");
+    assertEq(dim[1], 1920,   "buildTextureDimMessage width");
+    assertEq(dim[2], 1080,   "buildTextureDimMessage height");
+
+    // buildPositionMessage
+    var pos = glt.buildPositionMessage(0.5, -0.5);
+    assertEq(pos[0], "position", "buildPositionMessage returns 'position' keyword");
+    assertEq(pos[1], 0.5,        "buildPositionMessage tx");
+    assertEq(pos[2], -0.5,       "buildPositionMessage ty");
+    assertEq(pos[3], 0,          "buildPositionMessage z is 0");
+
+    // buildScaleMessage
+    var sc = glt.buildScaleMessage(2.0, 0.5);
+    assertEq(sc[0], "scale", "buildScaleMessage returns 'scale' keyword");
+    assertEq(sc[1], 2.0,     "buildScaleMessage sx");
+    assertEq(sc[2], 0.5,     "buildScaleMessage sy");
+    assertEq(sc[3], 1,       "buildScaleMessage sz is 1");
+
+    // buildShaderUniformMessage
+    var uni = glt.buildShaderUniformMessage("brightness", 0.75);
+    assertEq(uni[0], "val_brightness", "buildShaderUniformMessage prefixes 'val_'");
+    assertEq(uni[1], 0.75,             "buildShaderUniformMessage value");
+
+    // defaults for missing args
+    var dimDef = glt.buildTextureDimMessage(0, 0);
+    assert(dimDef[1] === 0 || dimDef[1] === 1920,
+           "buildTextureDimMessage falls back when w=0");
+
+    var posDef = glt.buildPositionMessage();
+    assertEq(posDef[1], 0, "buildPositionMessage defaults tx to 0");
+
+    var scDef = glt.buildScaleMessage();
+    assertEq(scDef[1], 1, "buildScaleMessage defaults sx to 1");
+});
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 

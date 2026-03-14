@@ -775,3 +775,19 @@ layer_1 ─┘                          [jit.op sfade] → output
 実際のデプロイでは上記の組み合わせを重ねて使うことがほとんどです。
 最小構成は **Approach 1 + Approach 2**（ピクセル + メタデータ）で、
 そこに必要に応じて Approach 3〜5 を追加します。
+
+---
+
+## 付録 B：CPU マトリクス vs GPU テクスチャ
+
+上記の Approach 1〜5 はいずれも CPU 側の `jit.matrix` を基盤としています。
+パフォーマンスを最大化するためには、動画フレームを**GPU テクスチャ（`jit.gl.texture`）**
+として扱う「GPU パス」への移行が有効です。
+
+- `jit.gl.texture` による名前共有（Approach 1 の GPU 版）
+- `jit.gl.pix` + GLSL シェーダによる FX（Approach 1 の CPU FX 群を置換）
+- `jit.gl.render` による GPU マルチレイヤー合成
+- CPU パスと GPU パスの使い分け基準
+- このプロジェクトへの段階的な移行手順
+
+詳細は **[docs/gpu_texture_path.md](./gpu_texture_path.md)** を参照してください。

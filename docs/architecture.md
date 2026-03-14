@@ -210,9 +210,22 @@ OSC アドレス: /m4lv/<rackId>/frame
 
 ## 詳細ドキュメント / Detailed Documentation
 
-各方式の内部仕組み・遅延評価・maxpat オブジェクト構造の詳細については
-**[docs/approach_details.md](./approach_details.md)** を参照してください。
+### 各方式の内部仕組み・遅延・maxpat 構造
+
+**[docs/approach_details.md](./approach_details.md)**
 
 - 各 Approach の内部アルゴリズムと Max ランタイムの動作原理
 - フェーズ別遅延の定量評価と比較表
 - `video_source.maxpat` / `video_fx.maxpat` / `video_hub.maxpat` のオブジェクト一覧・ワイヤリング図・初期化シーケンス
+
+### GPU テクスチャパス — 動画はテクスチャ状態で扱うべきか？
+
+**[docs/gpu_texture_path.md](./gpu_texture_path.md)**
+
+- CPU マトリクス (`jit.matrix`) と GPU テクスチャ (`jit.gl.texture`) の根本的な違い
+- `jit.gl.render` によるマルチレイヤー GPU 合成
+- GLSL シェーダ FX (`jit.gl.pix`) と CPU FX の対応表
+- パフォーマンス比較（FPS スケーラビリティ）
+- CPU パスと GPU パスを使い分けるべき場面
+- このプロジェクトへの移行ステップ
+- 命名規則の拡張 (`m4lv_<rackId>_tex`, `m4lv_<rackId>_render` …)
