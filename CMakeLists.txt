@@ -44,3 +44,8 @@ add_subdirectory(
     ${CMAKE_CURRENT_SOURCE_DIR}/source/cv.jit.LKflow.gpu
     ${CMAKE_CURRENT_BINARY_DIR}/cv.jit.LKflow.gpu
 )
+
+add_subdirectory(
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/cv.jit.LKflow.lite
+    ${CMAKE_CURRENT_BINARY_DIR}/cv.jit.LKflow.lite
+)
